@@ -1,14 +1,14 @@
 from neuralogic import *
 
-print(input)
-print(input1D)
+print(f'\nINPUTS = {input}\n')
 
 AND = AND()
 OR = OR()
 NAND = NAND()
 NOR = NOR()
 XOR = XOR()
-NOT = NOT()
-for i in [AND, OR, NAND, NOR, XOR, NOT]:
-    prediction = i.predict()
-    print(prediction)
+XNOR = XNOR()
+for i in ['AND', 'OR', 'NAND', 'NOR', 'XOR', 'XNOR']:
+    prediction = eval(i).predict()
+    print(f'{i}: {prediction}')
+print()

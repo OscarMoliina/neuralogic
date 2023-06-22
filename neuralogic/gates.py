@@ -87,3 +87,8 @@ def XOR() -> LogicGate:
     FINAL.merge((OR_,1), (NAND_,1))
     return FINAL
 
+def XNOR() -> LogicGate:
+    FINAL = NOT()
+    XOR_ = XOR()
+    FINAL.merge((XOR_,-1))
+    return FINAL
