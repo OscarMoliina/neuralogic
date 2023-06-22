@@ -7,8 +7,8 @@ AND = AND()
 OR = OR()
 NAND = NAND()
 NOR = NOR()
-ManualXOR = ManualXOR()
+XOR = XOR()
 NOT = NOT()
-for i in [AND, OR, NAND, NOR, ManualXOR, NOT]:
+for i in [AND, OR, NAND, NOR, XOR, NOT]:
     prediction = i.predict()
     print(prediction)

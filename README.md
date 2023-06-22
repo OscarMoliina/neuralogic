@@ -1,8 +1,12 @@
 # neuralogic
+
+### Done
+- LogicGates Merge
+- XOR example (and others!)
+
 ### To-Do
-- Logic Gates Merge
 - Modify input assignment
   - Do not make inputs necessary to initialize a LogicGate
   - Input size
-- XOR example
+- Save weigths for then merge with fixed weigths
 - Graphical Unit Interface

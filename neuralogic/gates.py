@@ -15,38 +15,38 @@ input1D = [
 
 def NOT() -> LogicGate:
     lg = LogicGate(inputs=input1D)
-    n = OutputNeuron(tau=0)
+    n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     lg.connect(lg.inputs[0], n, -1)
     return lg
 
 def AND() -> LogicGate:
     lg = LogicGate(inputs=input)
-    n = OutputNeuron(tau=2)
+    n = OutputNeuron(tau=2, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
         lg.connect(i, n, 1)
     return lg
 
-def NAND() -> LogicGate:
+def OR() -> LogicGate:
     lg = LogicGate(inputs=input)
-    n = OutputNeuron(tau=-1)
+    n = OutputNeuron(tau=1, firstlayer=True)
+    lg.add(n)
+    for i in lg.inputs:
+        lg.connect(i, n, 1)
+    return lg
+
+def ManualNAND() -> LogicGate:
+    lg = LogicGate(inputs=input)
+    n = OutputNeuron(tau=-1, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
         lg.connect(i, n, -1)
     return lg
 
-def OR() -> LogicGate:
+def ManualNOR() -> LogicGate:
     lg = LogicGate(inputs=input)
-    n = OutputNeuron(tau=1)
-    lg.add(n)
-    for i in lg.inputs:
-        lg.connect(i, n, 1)
-    return lg
-
-def NOR() -> LogicGate:
-    lg = LogicGate(inputs=input)
-    n = OutputNeuron(tau=0)
+    n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
         lg.connect(i, n, -1)
@@ -55,8 +55,8 @@ def NOR() -> LogicGate:
 def ManualXOR() -> LogicGate:
     lg = LogicGate(inputs=input)
     AND = OutputNeuron(tau=2)
-    OR = Neuron(tau=1)
-    NAND = Neuron(tau=-1)
+    OR = Neuron(tau=1, firstlayer=True)
+    NAND = Neuron(tau=-1, firstlayer=True)
     lg.add(AND)
     lg.add(OR)
     lg.add(NAND)
@@ -68,9 +68,22 @@ def ManualXOR() -> LogicGate:
     lg.connect(NAND, AND, 1)
     return lg
 
+def NAND() -> LogicGate:
+    FINAL = NOT()
+    AND_ = AND()
+    FINAL.merge((AND_,-1))
+    return FINAL
+
+def NOR() -> LogicGate:
+    FINAL = NOT()
+    OR_ = OR()
+    FINAL.merge((OR_,-1))
+    return FINAL
+
 def XOR() -> LogicGate:
-    lg = LogicGate(inputs=input)
-    AND = AND()
-    OR = OR()
-    NAND = NAND()
+    FINAL = AND()
+    OR_ = OR()
+    NAND_ = NAND()
+    FINAL.merge((OR_,1), (NAND_,1))
+    return FINAL
 

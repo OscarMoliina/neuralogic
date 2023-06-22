@@ -18,10 +18,16 @@ class Node:
         return s
 
 class Neuron(Node):
-    def __init__(self, tau:int) -> None:
+    def __init__(
+        self, 
+        tau:int, 
+        firstlayer:bool = False
+    ) -> None:
         super().__init__()
         self.tau = tau
         self.inputs:List[Tuple[Node,int]] = []
+        self.weigth:List[int] = []
+        self.firstlayer = firstlayer
     
     def __repr__(self) -> str:
         s = f'Neuron(out={self.out},tau={self.tau})'
@@ -38,5 +44,5 @@ class OutputNeuron(Neuron):
     '''
     Abstract class refering to the unique output neuron.
     '''
-    def __init__(self, tau: int) -> None:
-        super().__init__(tau)
+    def __init__(self, tau: int, firstlayer:bool) -> None:
+        super().__init__(tau, firstlayer)

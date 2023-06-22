@@ -50,34 +50,32 @@ class LogicGate(Node):
             self.neurons.append(n)
             self.structure[n] = []
 
-    def merge(self,other):
+    def merge(self, *args:List[Tuple]):
         '''
-        TODO: Combines 2 instances of LogicGate
+        Combines 2 instances of LogicGate
         '''
-
+        assert len(args) == self.variables, \
+            f'This instance of {self.__class__} requires {self.combinations} \
+                arguments but {len(args)} were given'
+        
+        for n in self.neurons:
+            if n.firstlayer:
+                n.inputs = []
+                for lg, w in args:
+                    self.connect(n1=lg.outputn, n2=n, w=w)
+        
+        self.combinations = max([self.combinations]+[arg[0].combinations for arg in args])
+        
     def connect(self, n1, n2, w):
         '''
         Adds a weigthed connection between neuron 1 and 2
         '''
-        if isinstance(n1,LogicGate) and isinstance(n2,LogicGate):
-            # Si n2 ja té inputs, treus i afegeixes element al primer
-            # element d la tupla (hauria de ser llista).
-            # Si el segon element de la subllista és None, vol dir que
-            # abans ja s'ha connectat amb una altra LogicGate, així que
-            # toca afegirho al segon element.
-            if isinstance(n2.inputs[0][0],Node):
-                n2.inputs = [[n1] for _ in range(len())]
-            else:
-                pass
-
-            
+        assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
+        if isinstance(n1,Node) or isinstance(n1,Neuron):
+            self.structure[n2].append(n1)
+            n2.inputs.append((n1,w))
         else:
-            assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
-            if isinstance(n1,Node) or isinstance(n1,Neuron):
-                self.structure[n2].append(n1)
-                n2.inputs.append((n1,w))
-            else:
-                raise TypeError
+            raise TypeError
     
     def predict(self) -> Literal[0, 1]:
         '''
