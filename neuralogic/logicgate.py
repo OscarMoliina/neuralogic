@@ -9,12 +9,11 @@ class LogicGate(Node):
     def __init__(
         self,
         inputs:List = []
-        #inplength:int = 2
     ):
         self.outputn: OutputNeuron = None
         self.neurons = []
         self.combinations = None
-        self.variables = None
+        self.variables = None #inputsize
         if inputs != []:
             self.insertInputs(inputs=inputs)
         self.structure = {tpl:[] for tpl in self.inputs}

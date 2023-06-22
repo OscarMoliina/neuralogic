@@ -31,7 +31,7 @@ class Neuron(Node):
         for n,w in self.inputs:
             if not n.isinput:
                 n.compute(it=it)
-        self.out = 1 if sum([v.out[it]*w if v.input else v.out*w for v,w in self.inputs]) >= self.tau else 0
+        self.out = 1 if sum([v.out[it]*w if v.isinput else v.out*w for v,w in self.inputs]) >= self.tau else 0
         return self.out
 
 class OutputNeuron(Neuron):

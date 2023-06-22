@@ -8,6 +8,18 @@ input = [
     (1,1)
 ]
 
+input1D = [
+    (0,),
+    (1,)
+]
+
+def NOT() -> LogicGate:
+    lg = LogicGate(inputs=input1D)
+    n = OutputNeuron(tau=0)
+    lg.add(n)
+    lg.connect(lg.inputs[0], n, -1)
+    return lg
+
 def AND() -> LogicGate:
     lg = LogicGate(inputs=input)
     n = OutputNeuron(tau=2)
