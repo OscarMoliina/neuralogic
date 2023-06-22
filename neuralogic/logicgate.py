@@ -7,14 +7,16 @@ class LogicGate(Node):
     Logic Gate: Directional weighted graph of Neurons
     '''
     def __init__(
-        self, 
-        neurons:List[Neuron] = [], 
+        self,
         inputs:List = []
+        #inplength:int = 2
     ):
         self.outputn: OutputNeuron = None
-        self.neurons = neurons
-        self.inputs  = self.toNode(inputs)
-        self.inplength = len(self.inputs[0].out)
+        self.neurons = []
+        self.combinations = None
+        self.variables = None
+        if inputs != []:
+            self.insertInputs(inputs=inputs)
         self.structure = {tpl:[] for tpl in self.inputs}
 
     def __repr__(self) -> str:
@@ -22,11 +24,19 @@ class LogicGate(Node):
         s += f'\n    Structure = {str(self.structure)}\n)'
         return s
     
-    def toNode(self, inputs):
-        return [
-            Node(out=[i[0] for i in inputs], input=True),
-            Node(out=[i[1] for i in inputs], input=True)
-        ]
+    def insertInputs(self, inputs) -> List[Node]:
+        '''
+        Inplace method that compute self.inputs, self.combinations and self.variables.
+        The first one being a List with self.variables Nodes, one for each
+        variable containing a list of all the values for its variable
+        in each combination.
+
+        Note that the output of each node is a list with length equal
+        to the number of combinations.
+        '''
+        self.inputs = [Node(out=[i[j] for i in inputs], isinput=True) for j in range(len(inputs[0]))]
+        self.combinations = len(inputs)
+        self.variables = len(self.inputs)
 
     def add(self, n):
         '''
@@ -50,12 +60,25 @@ class LogicGate(Node):
         '''
         Adds a weigthed connection between neuron 1 and 2
         '''
-        assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
-        if isinstance(n1,Node) or isinstance(n1,Neuron):
-            self.structure[n2].append(n1)
-            n2.inputs.append((n1,w))
+        if isinstance(n1,LogicGate) and isinstance(n2,LogicGate):
+            # Si n2 ja té inputs, treus i afegeixes element al primer
+            # element d la tupla (hauria de ser llista).
+            # Si el segon element de la subllista és None, vol dir que
+            # abans ja s'ha connectat amb una altra LogicGate, així que
+            # toca afegirho al segon element.
+            if isinstance(n2.inputs[0][0],Node):
+                n2.inputs = [[n1] for _ in range(len())]
+            else:
+                pass
+
+            
         else:
-            raise TypeError
+            assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
+            if isinstance(n1,Node) or isinstance(n1,Neuron):
+                self.structure[n2].append(n1)
+                n2.inputs.append((n1,w))
+            else:
+                raise TypeError
     
     def predict(self) -> Literal[0, 1]:
         '''
@@ -63,7 +86,7 @@ class LogicGate(Node):
         The final result is saved in self.out.
         '''
         self.out = []
-        for i in range(self.inplength):
-            self.outputn.out = self.outputn.compute(it=i)
+        for i in range(self.combinations):
+            self.outputn.compute(it=i)
             self.out.append(self.outputn.out)
         return self.out

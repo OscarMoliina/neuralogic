@@ -5,13 +5,13 @@ class Node:
         self, 
         key:int = None, 
         out:int|List = None,
-        input:bool = False
+        isinput:bool = False
     ) -> None:
         self.key = key
         self.out = out
-        self.input = input
-        if self.input and not isinstance(self.out, List):
-            raise TypeError
+        self.isinput = isinput
+        if self.isinput and not isinstance(self.out, List):
+            raise TypeError('Output must be a list of input values for the LogicGate')
     
     def __repr__(self) -> str:
         s = f'Node(out={self.out})'
@@ -21,15 +21,15 @@ class Neuron(Node):
     def __init__(self, tau:int) -> None:
         super().__init__()
         self.tau = tau
-        self.inputs:List[Tuple[Neuron,int]] = []
+        self.inputs:List[Tuple[Node,int]] = []
     
     def __repr__(self) -> str:
-        s = f'Neuron({self.key},tau={self.tau})'
+        s = f'Neuron(out={self.out},tau={self.tau})'
         return s
 
     def compute(self,it) -> Literal[0, 1]:
         for n,w in self.inputs:
-            if not n.input:
+            if not n.isinput:
                 n.compute(it=it)
         self.out = 1 if sum([v.out[it]*w if v.input else v.out*w for v,w in self.inputs]) >= self.tau else 0
         return self.out
