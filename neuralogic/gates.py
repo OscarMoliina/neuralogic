@@ -1,27 +1,22 @@
 from neuralogic.logicgate import LogicGate
 from neuralogic.nn.neuron import Neuron, OutputNeuron, Node
 
-input = [
-    (0,0),
-    (0,1),
-    (1,0),
-    (1,1)
-]
-
-input1D = [
-    (0,),
-    (1,)
-]
+def Buffer() -> LogicGate:
+    lg = LogicGate(variables=1)
+    n = OutputNeuron(tau=1, firstlayer=True)
+    lg.add(n)
+    lg.connect(lg.inputs[0], n, 1)
+    return lg
 
 def NOT() -> LogicGate:
-    lg = LogicGate(inputs=input1D)
+    lg = LogicGate(variables=1)
     n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     lg.connect(lg.inputs[0], n, -1)
     return lg
 
 def AND() -> LogicGate:
-    lg = LogicGate(inputs=input)
+    lg = LogicGate(variables=2)
     n = OutputNeuron(tau=2, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -29,7 +24,7 @@ def AND() -> LogicGate:
     return lg
 
 def OR() -> LogicGate:
-    lg = LogicGate(inputs=input)
+    lg = LogicGate(variables=2)
     n = OutputNeuron(tau=1, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -37,7 +32,7 @@ def OR() -> LogicGate:
     return lg
 
 def ManualNAND() -> LogicGate:
-    lg = LogicGate(inputs=input)
+    lg = LogicGate(variables=2)
     n = OutputNeuron(tau=-1, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -45,7 +40,7 @@ def ManualNAND() -> LogicGate:
     return lg
 
 def ManualNOR() -> LogicGate:
-    lg = LogicGate(inputs=input)
+    lg = LogicGate(variables=2)
     n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -53,7 +48,7 @@ def ManualNOR() -> LogicGate:
     return lg
 
 def ManualXOR() -> LogicGate:
-    lg = LogicGate(inputs=input)
+    lg = LogicGate(variables=2)
     AND = OutputNeuron(tau=2)
     OR = Neuron(tau=1, firstlayer=True)
     NAND = Neuron(tau=-1, firstlayer=True)
@@ -71,24 +66,24 @@ def ManualXOR() -> LogicGate:
 def NAND() -> LogicGate:
     FINAL = NOT()
     AND_ = AND()
-    FINAL.merge((AND_,-1))
+    FINAL.merge(AND_)
     return FINAL
 
 def NOR() -> LogicGate:
     FINAL = NOT()
     OR_ = OR()
-    FINAL.merge((OR_,-1))
+    FINAL.merge(OR_)
     return FINAL
 
 def XOR() -> LogicGate:
     FINAL = AND()
     OR_ = OR()
     NAND_ = NAND()
-    FINAL.merge((OR_,1), (NAND_,1))
+    FINAL.merge(OR_, NAND_)
     return FINAL
 
 def XNOR() -> LogicGate:
     FINAL = NOT()
     XOR_ = XOR()
-    FINAL.merge((XOR_,-1))
+    FINAL.merge(XOR_)
     return FINAL

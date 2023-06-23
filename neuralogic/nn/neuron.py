@@ -25,8 +25,8 @@ class Neuron(Node):
     ) -> None:
         super().__init__()
         self.tau = tau
-        self.inputs:List[Tuple[Node,int]] = []
-        self.weigth:List[int] = []
+        self.inputs:List[Node] = []
+        self.weigths:List[int] = []
         self.firstlayer = firstlayer
     
     def __repr__(self) -> str:
@@ -34,10 +34,10 @@ class Neuron(Node):
         return s
 
     def compute(self,it) -> Literal[0, 1]:
-        for n,w in self.inputs:
+        for n in self.inputs:
             if not n.isinput:
                 n.compute(it=it)
-        self.out = 1 if sum([v.out[it]*w if v.isinput else v.out*w for v,w in self.inputs]) >= self.tau else 0
+        self.out = 1 if sum([v.out[it]*w if v.isinput else v.out*w for v,w in zip(self.inputs,self.weigths)]) >= self.tau else 0
         return self.out
 
 class OutputNeuron(Neuron):

@@ -1,5 +1,6 @@
 from typing import List, Tuple, Any, overload, Literal
 from collections import OrderedDict, namedtuple
+from itertools import product
 from neuralogic.nn.neuron import Neuron, Node, OutputNeuron
 
 class LogicGate(Node):
@@ -8,14 +9,13 @@ class LogicGate(Node):
     '''
     def __init__(
         self,
-        inputs:List = []
+        variables:int = 2
     ):
         self.outputn: OutputNeuron = None
         self.neurons = []
         self.combinations = None
-        self.variables = None #inputsize
-        if inputs != []:
-            self.insertInputs(inputs=inputs)
+        self.variables = variables #inputsize
+        self.insertInputs()
         self.structure = {tpl:[] for tpl in self.inputs}
 
     def __repr__(self) -> str:
@@ -23,7 +23,7 @@ class LogicGate(Node):
         s += f'\n    Structure = {str(self.structure)}\n)'
         return s
     
-    def insertInputs(self, inputs) -> List[Node]:
+    def insertInputs(self) -> List[Node]:
         '''
         Inplace method that compute self.inputs, self.combinations and self.variables.
         The first one being a List with self.variables Nodes, one for each
@@ -33,9 +33,10 @@ class LogicGate(Node):
         Note that the output of each node is a list with length equal
         to the number of combinations.
         '''
+        binary = [0,1]
+        inputs = list(product(binary,repeat=self.variables))
         self.inputs = [Node(out=[i[j] for i in inputs], isinput=True) for j in range(len(inputs[0]))]
         self.combinations = len(inputs)
-        self.variables = len(self.inputs)
 
     def add(self, n):
         '''
@@ -50,7 +51,7 @@ class LogicGate(Node):
             self.neurons.append(n)
             self.structure[n] = []
 
-    def merge(self, *args:List[Tuple]):
+    def merge(self, *args:List):
         '''
         Combines 2 instances of LogicGate
         '''
@@ -61,10 +62,10 @@ class LogicGate(Node):
         for n in self.neurons:
             if n.firstlayer:
                 n.inputs = []
-                for lg, w in args:
-                    self.connect(n1=lg.outputn, n2=n, w=w)
+                for idx,lg in enumerate(args):
+                    self.connect(n1=lg.outputn, n2=n, w=n.weigths[idx])
         
-        self.combinations = max([self.combinations]+[arg[0].combinations for arg in args])
+        self.combinations = max([self.combinations]+[arg.combinations for arg in args])
         
     def connect(self, n1, n2, w):
         '''
@@ -73,7 +74,8 @@ class LogicGate(Node):
         assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
         if isinstance(n1,Node) or isinstance(n1,Neuron):
             self.structure[n2].append(n1)
-            n2.inputs.append((n1,w))
+            n2.inputs.append(n1)
+            n2.weigths.append(w)
         else:
             raise TypeError
     
