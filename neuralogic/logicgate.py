@@ -29,16 +29,18 @@ class LogicGate(Node):
         variables:int = 2
     ):
         self.variables = variables
+        self.varsset = set()
         self.outputn: OutputNeuron = None
         self.neurons = []
         self.inputs = []
         self.combinations = 2**self.variables
         self.insertInputs()
-        self.structure = {tpl:[] for tpl in self.inputs}
+        self.structure = {}
 
     def __repr__(self) -> str:
         s = f'LogicGate(\n    {len(self.neurons)} neurons,'
-        s += f'\n    Structure = {str(self.structure)}\n)'
+        s += f'\n    {self.variables} variables,'
+        s += f'\n    Inputs = {str(self.inputs)}\n)'
         return s
     
     def insertInputs(self) -> List[Node]:
@@ -56,9 +58,11 @@ class LogicGate(Node):
         Note that the output of each node is a list with equal size
         to the number of combinations.
         '''
-        binary = [0,1]
+        binary = [1,0]
         inputs = list(product(binary,repeat=self.variables))
-        self.inputs = [Node(out=[i[j] for i in inputs], isinput=True) for j in range(self.variables)]
+        self.inputs = [Node(out=[i[j] for i in inputs], key=j, isinput=True) for j in range(self.variables)]
+        for i in self.inputs:
+            self.varsset.add(i)
         self.combinations = len(inputs)
 
     def add(self, n):
@@ -70,10 +74,11 @@ class LogicGate(Node):
         '''
         if isinstance(n, Neuron):
             self.neurons.append(n)
-            self.structure[n] = []
+            self.structure[n] = {}
             if isinstance(n, OutputNeuron):
                 assert self.outputn == None, 'Can only exists one instance of OutputNeuron at the same LogicGate'
                 self.outputn = n
+                self.structure[n] = {}
 
     def merge(self, *args:List):
         r'''
@@ -104,9 +109,15 @@ class LogicGate(Node):
             if n.firstlayer:
                 n.inputs = []
                 for idx,lg in enumerate(args):
-                    self.connect(n1=lg.outputn, n2=n, w=n.weights[idx])
-        
-        self.combinations = max([self.combinations]+[arg.combinations for arg in args])
+                    if isinstance(lg, LogicGate):
+                        self.connect(n1=lg.outputn, n2=n, w=n.weights[idx])
+                    elif isinstance(lg, Node):
+                        self.connect(n1=lg, n2=n, w=n.weights[idx])
+        for lg in args:
+            if isinstance(lg, LogicGate):
+                self.neurons += lg.neurons
+
+        self.combinations = max([self.combinations]+[arg.combinations if isinstance(arg,LogicGate) else len(arg.out) for arg in args])
         
     def connect(self, n1, n2, w):
         r'''
@@ -114,7 +125,7 @@ class LogicGate(Node):
         '''
         assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
         if isinstance(n1,Node):
-            self.structure[n2].append(n1)
+            #self.structure[n2].append(n1)
             n2.inputs.append(n1)
             n2.weights.append(w)
         else:

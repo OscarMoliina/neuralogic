@@ -28,6 +28,12 @@ class Node:
     def __repr__(self) -> str:
         s = f'Node(out={self.out})'
         return s
+    
+    def __eq__(self, __value: object) -> bool:
+        return self.key == __value.key
+    
+    def __hash__(self) -> int:
+        return hash(self.key)
 
 class Neuron(Node):
     r'''
@@ -78,7 +84,7 @@ class Neuron(Node):
         for n in self.inputs:
             if not n.isinput:
                 n.compute(it=it)
-        self.out = 1 if sum([v.out[it]*w if v.isinput else v.out*w for v,w in zip(self.inputs,self.weights)]) >= self.tau else 0
+        self.out = 1 if sum([n.out[it]*w if n.isinput else n.out*w for n,w in zip(self.inputs,self.weights)]) >= self.tau else 0
         return self.out
 
 class OutputNeuron(Neuron):
