@@ -1,64 +1,39 @@
 from neuralogic.logicgate import LogicGate
 from neuralogic.nn.neuron import Neuron, OutputNeuron, Node
+from neuralogic.lgutils import *
 
-def Buffer() -> LogicGate:
-    lg = LogicGate(numvars=1)
-    n = OutputNeuron(tau=1, firstlayer=True)
+def buildLG(neuron) -> LogicGate:
+    n = neuron()
+    lg = LogicGate(numvars=len(n.weights))
+    n.isoutput = True
+    n.firstlayer = True
     lg.add(n)
-    lg.connect(lg.inputs[0], n, 1)
+    for i in range(lg.numvars):
+        lg.connect(lg.inputs[i], n, n.weights[i])
     return lg
 
-def NOT() -> LogicGate:
-    lg = LogicGate(numvars=1)
-    n = OutputNeuron(tau=0, firstlayer=True)
-    lg.add(n)
-    lg.connect(lg.inputs[0], n, -1)
-    return lg
-
-def AND() -> LogicGate:
-    lg = LogicGate(numvars=2)
-    n = OutputNeuron(tau=2, firstlayer=True)
-    lg.add(n)
-    for i in lg.inputs:
-        lg.connect(i, n, 1)
-    return lg
-
-def OR() -> LogicGate:
-    lg = LogicGate(numvars=2)
-    n = OutputNeuron(tau=1, firstlayer=True)
-    lg.add(n)
-    for i in lg.inputs:
-        lg.connect(i, n, 1)
-    return lg
-
-def ManualNAND() -> LogicGate:
-    lg = LogicGate(numvars=2)
-    n = OutputNeuron(tau=-1, firstlayer=True)
-    lg.add(n)
-    for i in lg.inputs:
-        lg.connect(i, n, -1)
-    return lg
-
-def ManualNOR() -> LogicGate:
-    lg = LogicGate(numvars=2)
-    n = OutputNeuron(tau=0, firstlayer=True)
-    lg.add(n)
-    for i in lg.inputs:
-        lg.connect(i, n, -1)
-    return lg
+def Buffer() -> LogicGate: return buildLG(neuron=BufferNeuron) 
+def NOT() -> LogicGate: return buildLG(neuron=NOTNeuron)
+def AND() -> LogicGate: return buildLG(neuron=ANDNeuron)
+def OR() -> LogicGate: return buildLG(neuron=ORNeuron)
+def ManualNAND() -> LogicGate: return buildLG(neuron=NANDNeuron)
+def ManualNOR() -> LogicGate: return buildLG(neuron=NORNeuron)
 
 def ManualXOR() -> LogicGate:
     lg = LogicGate(numvars=2)
-    AND = OutputNeuron(tau=2)
-    OR = Neuron(tau=1, firstlayer=True)
-    NAND = Neuron(tau=-1, firstlayer=True)
+    AND = ANDNeuron()
+    AND.isoutput = True
+    OR = ORNeuron()
+    OR.firstlayer = True
+    NAND = NANDNeuron()
+    NAND.firstlayer = True
     lg.add(AND)
     lg.add(OR)
     lg.add(NAND)
-    for i in lg.inputs:
-        lg.connect(i, OR, 1)
-    for i in lg.inputs:
-        lg.connect(i, NAND, -1)
+    for i in range(lg.numvars):
+        lg.connect(lg.inputs[i], OR, OR.weights[i])
+    for i in range(lg.numvars):
+        lg.connect(lg.inputs[i], NAND, NAND.weights[i])
     lg.connect(OR, AND, 1)
     lg.connect(NAND, AND, 1)
     return lg

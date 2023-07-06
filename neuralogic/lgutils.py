@@ -1,10 +1,11 @@
 from neuralogic.nn.neuron import *
 
-def nNOT(isout:bool = False) -> Neuron: return Neuron(tau=0, weights=[-1], isoutput=isout)
-def nBuffer(isout:bool = False) -> Neuron: return Neuron(tau=1, weights=[1], isoutput=isout)
+#UnitaryNeurons
+def NOTNeuron() -> Neuron: return Neuron(tau=0, weights=[-1])
+def BufferNeuron() -> Neuron: return Neuron(tau=1, weights=[1])
 
-def nAND(isout:bool = False) -> Neuron: return Neuron(tau=2, weights=[1,1], isoutput=isout)
-def nOR(isout:bool = False) -> Neuron: return Neuron(tau=1, weights=[1,1], isoutput=isout)
-
-def nNAND(isout:bool = False) -> Neuron: return Neuron(tau=-1, weights=[-1,-1], isoutput=isout)
-def nNOR(isout:bool = False) -> Neuron: return Neuron(tau=0, weights=[-1,-1], isoutput=isout)
+#BinaryNeurons
+def ANDNeuron() -> Neuron: return Neuron(tau=2, weights=[1,1])
+def ORNeuron() -> Neuron: return Neuron(tau=1, weights=[1,1])
+def NANDNeuron() -> Neuron: return Neuron(tau=-1, weights=[-1,-1])
+def NORNeuron() -> Neuron: return Neuron(tau=0, weights=[-1,-1])

@@ -5,13 +5,11 @@ from typing import Any, List, Tuple, Literal
 
 ops = {
     #str, logicgate, preference, numvars, neuron
-    'not' : (NOT(), 1, 1, nNOT),
-    'and' : (AND(), 0, 2, nAND),
-    'or'  : (OR(),  0, 2, nOR),
-    'xor' : (XOR(), 0, 2, None),
-    'nand': (NAND(),0, 2, nNAND),
-    'nor' : (NOR(), 0, 2, nNOR),
-    'xnor': (XNOR(),0, 2, None)
+    'not' : (NOT(), 1, 1, NOTNeuron),
+    'and' : (AND(), 0, 2, ANDNeuron),
+    'or'  : (OR(),  0, 2, ORNeuron),
+    'nand': (NAND(),0, 2, NANDNeuron),
+    'nor' : (NOR(), 0, 2, NORNeuron),
 }
 
 class RPN:
@@ -74,7 +72,6 @@ class LGCreator:
         Creates a LogicGate with a boolean formula as an input.
         '''
         f = self.rpn(s) #formula
-        print(f)
         self.lg = LogicGate(numvars=len(self.rpn.operands))
         operandsdic = {op:self.lg.inputs[idx] for idx,op in enumerate(self.rpn.operands)}
         
@@ -85,9 +82,10 @@ class LGCreator:
                 self.varstack.append(operandsdic[el])
             elif el in self.rpn.OPS:
                 #Add a neuron of its type
-                self.lg.add(n:=ops[el][3](isout = False))
+                n = ops[el][3]()
                 if not f: 
                     n.isoutput = True
+                self.lg.add(n)
                 for idx in range(ops[el][2]):
                     node = self.varstack.pop()
                     if not isinstance(node,Neuron):
