@@ -19,27 +19,26 @@ class LogicGate(Node):
     a list containing all neurons in the network.
     - inputs: list (default=[])
     a list of Node intances, one for each variable.
-    - combinations: int (default=2**self.variables)
+    - combinations: int (default=2**self.numvars)
     number of combinations of inputs. 
     - structure: dict (default={})
     the graph network structure.
     '''
     def __init__(
         self,
-        variables:int = 2
+        numvars:int = 2
     ):
-        self.variables = variables
-        self.varsset = set()
+        self.numvars = numvars
         self.outputn: OutputNeuron = None
         self.neurons = []
         self.inputs = []
-        self.combinations = 2**self.variables
+        self.combinations = 2**self.numvars
         self.insertInputs()
         self.structure = {}
 
     def __repr__(self) -> str:
         s = f'LogicGate(\n    {len(self.neurons)} neurons,'
-        s += f'\n    {self.variables} variables,'
+        s += f'\n    {self.numvars} variables,'
         s += f'\n    Inputs = {str(self.inputs)}\n)'
         return s
     
@@ -47,8 +46,8 @@ class LogicGate(Node):
         r'''
         Called in the initialization of any LogicGate instance.
 
-        Inplace method that compute ``self.inputs``, ``self.combinations`` and ``self.variables``.
-        The first one being a List with ``self.variables`` Nodes, one for each
+        Inplace method that compute ``self.inputs``, ``self.combinations`` and ``self.numvars``.
+        The first one being a List with ``self.numvars`` Nodes, one for each
         variable containing a list of all the values for its variable
         in each combination.
 
@@ -59,10 +58,8 @@ class LogicGate(Node):
         to the number of combinations.
         '''
         binary = [1,0]
-        inputs = list(product(binary,repeat=self.variables))
-        self.inputs = [Node(out=[i[j] for i in inputs], key=j, isinput=True) for j in range(self.variables)]
-        for i in self.inputs:
-            self.varsset.add(i)
+        inputs = list(product(binary,repeat=self.numvars))
+        self.inputs = [Node(out=[i[j] for i in inputs], key=j, isinput=True) for j in range(self.numvars)]
         self.combinations = len(inputs)
 
     def add(self, n):
@@ -75,7 +72,7 @@ class LogicGate(Node):
         if isinstance(n, Neuron):
             self.neurons.append(n)
             self.structure[n] = {}
-            if isinstance(n, OutputNeuron):
+            if isinstance(n, OutputNeuron) or n.isoutput:
                 assert self.outputn == None, 'Can only exists one instance of OutputNeuron at the same LogicGate'
                 self.outputn = n
                 self.structure[n] = {}
@@ -101,7 +98,7 @@ class LogicGate(Node):
 
         It's useful in any creation of non-basic logic gates.
         '''
-        assert len(args) == self.variables, \
+        assert len(args) == self.numvars, \
             f'This instance of {self.__class__} requires {self.combinations} \
                 arguments but {len(args)} were given'
         
@@ -145,3 +142,9 @@ class LogicGate(Node):
             self.outputn.compute(it=i)
             self.out.append(self.outputn.out)
         return self.out
+
+class UnaryLG(LogicGate):
+    pass
+
+class BinaryLG(LogicGate):
+    pass

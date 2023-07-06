@@ -36,6 +36,7 @@ Truth table:
 - Save weigths for then merge with fixed weigths
 - Documentation in DocStrings
 - Hashable Nodes
+- Parser
 
 ### To-Do
 - Graphical Unit Interface
@@ -44,3 +45,4 @@ Truth table:
   - Simplify a LogicGate to a new lg only made with NAND and NOT  
 - Structural Graph
 - Identify input variables (Nodes) with a key to maintain coherence in merge
+- Improve Merge

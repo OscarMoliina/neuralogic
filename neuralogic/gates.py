@@ -2,21 +2,21 @@ from neuralogic.logicgate import LogicGate
 from neuralogic.nn.neuron import Neuron, OutputNeuron, Node
 
 def Buffer() -> LogicGate:
-    lg = LogicGate(variables=1)
+    lg = LogicGate(numvars=1)
     n = OutputNeuron(tau=1, firstlayer=True)
     lg.add(n)
     lg.connect(lg.inputs[0], n, 1)
     return lg
 
 def NOT() -> LogicGate:
-    lg = LogicGate(variables=1)
+    lg = LogicGate(numvars=1)
     n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     lg.connect(lg.inputs[0], n, -1)
     return lg
 
 def AND() -> LogicGate:
-    lg = LogicGate(variables=2)
+    lg = LogicGate(numvars=2)
     n = OutputNeuron(tau=2, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -24,7 +24,7 @@ def AND() -> LogicGate:
     return lg
 
 def OR() -> LogicGate:
-    lg = LogicGate(variables=2)
+    lg = LogicGate(numvars=2)
     n = OutputNeuron(tau=1, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -32,7 +32,7 @@ def OR() -> LogicGate:
     return lg
 
 def ManualNAND() -> LogicGate:
-    lg = LogicGate(variables=2)
+    lg = LogicGate(numvars=2)
     n = OutputNeuron(tau=-1, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -40,7 +40,7 @@ def ManualNAND() -> LogicGate:
     return lg
 
 def ManualNOR() -> LogicGate:
-    lg = LogicGate(variables=2)
+    lg = LogicGate(numvars=2)
     n = OutputNeuron(tau=0, firstlayer=True)
     lg.add(n)
     for i in lg.inputs:
@@ -48,7 +48,7 @@ def ManualNOR() -> LogicGate:
     return lg
 
 def ManualXOR() -> LogicGate:
-    lg = LogicGate(variables=2)
+    lg = LogicGate(numvars=2)
     AND = OutputNeuron(tau=2)
     OR = Neuron(tau=1, firstlayer=True)
     NAND = Neuron(tau=-1, firstlayer=True)

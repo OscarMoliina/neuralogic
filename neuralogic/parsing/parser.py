@@ -1,15 +1,17 @@
 from neuralogic.logicgate import LogicGate
 from neuralogic.gates import *
+from neuralogic.lgutils import *
 from typing import Any, List, Tuple, Literal
 
 ops = {
-    'not' : (NOT(), 1, 1),
-    'and' : (AND(), 0, 2),
-    'or'  : (OR(),  0, 2),
-    'xor' : (XOR(), 0, 2),
-    'nand': (NAND(),0, 2),
-    'nor' : (NOR(), 0, 2),
-    'xnor': (XNOR(),0, 2)
+    #str, logicgate, preference, numvars, neuron
+    'not' : (NOT(), 1, 1, nNOT),
+    'and' : (AND(), 0, 2, nAND),
+    'or'  : (OR(),  0, 2, nOR),
+    'xor' : (XOR(), 0, 2, None),
+    'nand': (NAND(),0, 2, nNAND),
+    'nor' : (NOR(), 0, 2, nNOR),
+    'xnor': (XNOR(),0, 2, None)
 }
 
 class RPN:
@@ -52,7 +54,8 @@ class RPN:
                     self.out.append(self.stack.pop())
                 self.stack.append(t)
             else:
-                self.operands.append(t)
+                if t not in self.operands:
+                    self.operands.append(t)
                 self.out.append(t)
         
         while self.stack:
@@ -71,25 +74,28 @@ class LGCreator:
         Creates a LogicGate with a boolean formula as an input.
         '''
         f = self.rpn(s) #formula
-        self.lg = LogicGate(variables=len(self.rpn.operands))
+        print(f)
+        self.lg = LogicGate(numvars=len(self.rpn.operands))
         operandsdic = {op:self.lg.inputs[idx] for idx,op in enumerate(self.rpn.operands)}
         
         while f:
             el = f[0]
-            if el in self.rpn.operands:
+            f.remove(el)
+            if el in operandsdic.keys():
                 self.varstack.append(operandsdic[el])
-                f.remove(el)
             elif el in self.rpn.OPS:
-                # Create a Logic Gate
-                lg = ops[el][0]
-                if ops[el][2] == 1:
-                    lg.merge(self.varstack.pop())
-                elif ops[el][2] == 2:
-                    lg.merge(self.varstack.pop(), self.varstack.pop())
-                self.varstack.append(lg)
-                f.remove(el)
-
-        self.lg = self.varstack[0]
+                #Add a neuron of its type
+                self.lg.add(n:=ops[el][3](isout = False))
+                if not f: 
+                    n.isoutput = True
+                for idx in range(ops[el][2]):
+                    node = self.varstack.pop()
+                    if not isinstance(node,Neuron):
+                        n.firstlayer = True
+                    self.lg.connect(n1=node,
+                                    n2=n,
+                                    w=n.weights[idx])
+                self.varstack.append(n)
 
         return self.lg
 

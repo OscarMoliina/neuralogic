@@ -56,16 +56,19 @@ class Neuron(Node):
     def __init__(
         self, 
         tau:int = 0, 
-        firstlayer:bool = False
+        weights:List[int] = None,
+        firstlayer:bool = False,
+        isoutput:bool = False
     ) -> None:
         super().__init__()
         self.tau = tau
         self.inputs:List[Node] = []
-        self.weights:List[int] = []
+        self.weights:List[int] =[] if weights == None else weights
         self.firstlayer = firstlayer
+        self.isoutput = isoutput
     
     def __repr__(self) -> str:
-        s = f'Neuron(out={self.out},tau={self.tau})'
+        s = f'Neuron(out={self.out},tau={self.tau},weights={self.weights})'
         return s
 
     def compute(self,it) -> Literal[0, 1]:
@@ -91,5 +94,5 @@ class OutputNeuron(Neuron):
     r'''
     Abstract class refering to the unique output neuron. It inherit from Neuron class.
     '''
-    def __init__(self, tau: int, firstlayer:bool) -> None:
-        super().__init__(tau, firstlayer)
+    def __init__(self, tau:int = 0, weights:List[int] = None, firstlayer:bool = False) -> None:
+        super().__init__(tau, weights, firstlayer)
