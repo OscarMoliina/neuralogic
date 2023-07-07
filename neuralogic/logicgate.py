@@ -11,7 +11,7 @@ class LogicGate(Node):
     capable to simulate all logic gates.
 
     Attributes:
-    - variables: int (default=2)
+    - numvars: int (default=2)
     number of variables that contains the LogicGate.
     - outputn: OutputNeuron (default=None)
     the last neuron of the network.
@@ -29,10 +29,10 @@ class LogicGate(Node):
         numvars:int = 2
     ):
         self.numvars = numvars
-        self.outputn: OutputNeuron = None
-        self.neurons = []
-        self.inputs = []
         self.combinations = 2**self.numvars
+        self.outputn: OutputNeuron = None
+        self.neurons: List[Neuron] = []
+        self.inputs = []
         self.insertInputs()
         self.structure = {}
 

@@ -75,6 +75,10 @@ class LGCreator:
         self.lg = LogicGate(numvars=len(self.rpn.operands))
         operandsdic = {op:self.lg.inputs[idx] for idx,op in enumerate(self.rpn.operands)}
         
+        #Etiquetem les variables
+        for k,v in operandsdic.items():
+            v.key = str(k)
+
         while f:
             el = f[0]
             f.remove(el)
@@ -83,6 +87,7 @@ class LGCreator:
             elif el in self.rpn.OPS:
                 #Add a neuron of its type
                 n = ops[el][3]()
+                n.key = el.upper()
                 if not f: 
                     n.isoutput = True
                 self.lg.add(n)

@@ -15,7 +15,7 @@ class Node:
     '''
     def __init__(
         self, 
-        key:int = None, 
+        key:int|str = None, 
         out:int|List = None,
         isinput:bool = False
     ) -> None:
@@ -68,7 +68,7 @@ class Neuron(Node):
         self.isoutput = isoutput
     
     def __repr__(self) -> str:
-        s = f'Neuron(out={self.out},tau={self.tau},weights={self.weights})'
+        s = f'Neuron(out={self.out},key={self.key},tau={self.tau},weights={self.weights})'
         return s
 
     def compute(self,it) -> Literal[0, 1]:

@@ -1,0 +1,17 @@
+digraph {
+	dpi=300
+	A [fillcolor=gray fontname="Poppins bold" shape=diamond style=filled]
+	B [fillcolor=gray fontname="Poppins bold" shape=diamond style=filled]
+	C [fillcolor=gray fontname="Poppins bold" shape=diamond style=filled]
+	NOT [fillcolor=turquoise fontname="Poppins bold" shape=ellipse style=filled]
+	AND [fillcolor=turquoise fontname="Poppins bold" shape=ellipse style=filled]
+	AND [fillcolor=turquoise fontname="Poppins bold" shape=ellipse style=filled]
+	OR [fillcolor=turquoise fontname="Poppins bold" shape=ellipse style=filled]
+	1519845497040 -> NOT [label="  -1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845496992 -> AND [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845494832 -> AND [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845497040 -> AND [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845496224 -> AND [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845497136 -> OR [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+	1519845491712 -> OR [label="  1" color=black fontcolor=crimson fontname="Poppins bold" penwidth=3.0 splines=ortho]
+}
