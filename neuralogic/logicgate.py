@@ -1,7 +1,7 @@
-from typing import List, Tuple, Any, overload, Literal
+from typing import List, Tuple, Any, overload, Literal, Set
 from collections import OrderedDict, namedtuple
 from itertools import product
-from neuralogic.nn.neuron import Neuron, Node, OutputNeuron
+from neuralogic.nn.neuron import Neuron, Node
 
 class LogicGate(Node):
     r'''
@@ -30,11 +30,12 @@ class LogicGate(Node):
     ):
         self.numvars = numvars
         self.combinations = 2**self.numvars
-        self.outputn: OutputNeuron = None
+        self.outputn: Neuron = None
         self.neurons: List[Neuron] = []
-        self.inputs = []
+        self.inputs: List[Node] = [] # All the inputs with the possibility of repetition
+        self.variables:OrderedDict[int:List] = OrderedDict() # Set of all different inputs
         self.insertInputs()
-        self.structure = {}
+        #self.structure = {}
 
     def __repr__(self) -> str:
         s = f'LogicGate(\n    {len(self.neurons)} neurons,'
@@ -60,7 +61,8 @@ class LogicGate(Node):
         binary = [1,0]
         inputs = list(product(binary,repeat=self.numvars))
         self.inputs = [Node(out=[i[j] for i in inputs], key=j, isinput=True) for j in range(self.numvars)]
-        self.combinations = len(inputs)
+        for inp in self.inputs:
+            self.variables[inp.key] = inp.out
 
     def add(self, n):
         r'''
@@ -71,13 +73,10 @@ class LogicGate(Node):
         '''
         if isinstance(n, Neuron):
             self.neurons.append(n)
-            self.structure[n] = {}
-            if isinstance(n, OutputNeuron) or n.isoutput:
-                assert self.outputn == None, 'Can only exists one instance of OutputNeuron at the same LogicGate'
+            if n.isoutput and not self.outputn:
                 self.outputn = n
-                self.structure[n] = {}
 
-    def merge(self, *args:List):
+    def merge(self, *args:'LogicGate'):
         r'''
         Inplace method that connects as instances of LogicGate as the number of variables
         that accepts the main LogicGate. The weights of the connexions are fixed and saved
@@ -99,23 +98,68 @@ class LogicGate(Node):
         It's useful in any creation of non-basic logic gates.
         '''
         assert len(args) == self.numvars, \
-            f'This instance of {self.__class__} requires {self.combinations} \
+            f'This instance of {self.__class__} requires {self.numvars} \
                 arguments but {len(args)} were given'
         
-        for n in self.neurons:
+        aux_variables = self.variables.copy()
+        aux_neurons = self.neurons.copy()
+        self.variables = OrderedDict()
+        self.inputs = []
+
+        # Añadimos a variables los nuevos inputs y a neuronas las nuevas neuronas
+        for lg in args:
+            if isinstance(lg,LogicGate):
+                for n in lg.neurons:
+                    self.add(n=n)
+                for inp in lg.inputs:
+                    self.variables[inp.key] = None
+                    self.inputs.append(inp.copy())
+            elif isinstance(lg,Node):
+                self.variables[lg.key] = None
+                self.inputs.append(lg.copy())
+        
+        # Canviem els inp.out dels inputs
+        self.numvars = len(self.variables)
+        self.combinations = 2**self.numvars
+        binary = [1,0]
+        inputs = list(product(binary,repeat=self.numvars))
+        
+        for idx,key in enumerate(self.variables):
+            self.variables[key] = [i[idx] for i in inputs]
+        
+        for node in self.inputs:
+            node.out = self.variables[node.key]
+
+        # Pas 1: ficar índexs de l'argument que han d'agafar
+        for idx, key in enumerate(aux_variables):
+            for n in aux_neurons:
+                if n.firstlayer:
+                    for i, inp in enumerate(n.inputs):
+                        if isinstance(inp, Node) and inp.key == key:
+                            n.inputs[i] = idx
+        
+        # Pas 2: agafar els inputs corresponents
+        for n in aux_neurons: 
             if n.firstlayer:
-                n.inputs = []
-                for idx,lg in enumerate(args):
-                    if isinstance(lg, LogicGate):
-                        self.connect(n1=lg.outputn, n2=n, w=n.weights[idx])
-                    elif isinstance(lg, Node):
-                        self.connect(n1=lg, n2=n, w=n.weights[idx])
+                n.firstlayer = False
+                for i, inp in enumerate(n.inputs):
+                    if isinstance(args[inp], LogicGate):
+                        n.inputs[i] = args[inp].outputn
+                    elif isinstance(args[inp], Node):
+                        n.inputs[i] = args[inp]
+                    else:
+                        raise TypeError
+        
+        # Pas 3: treure isoutput a les neurones out dels arguments
         for lg in args:
             if isinstance(lg, LogicGate):
-                self.neurons += lg.neurons
+                lg.outputn.isoutput = False
 
-        self.combinations = max([self.combinations]+[arg.combinations if isinstance(arg,LogicGate) else len(arg.out) for arg in args])
-        
+    # Merge que utilitza el paràmetre 'self.expression' i que
+    # crida a LGCreator.create(s) on s és l'expressió de self
+    # amb totes les variables canviades per les expressions 
+    # dels arguments.
+
     def connect(self, n1, n2, w):
         r'''
         Adds a weigthed connection between neuron 1 and 2
@@ -124,7 +168,7 @@ class LogicGate(Node):
         if isinstance(n1,Node):
             #self.structure[n2].append(n1)
             n2.inputs.append(n1)
-            n2.weights.append(w)
+            #n2.weights.append(w)
         else:
             raise TypeError('n1 must be an instance of Node.')
     
@@ -142,9 +186,3 @@ class LogicGate(Node):
             self.outputn.compute(it=i)
             self.out.append(self.outputn.out)
         return self.out
-
-class UnaryLG(LogicGate):
-    pass
-
-class BinaryLG(LogicGate):
-    pass

@@ -26,7 +26,7 @@ class Node:
             raise TypeError('Output must be a list of input values for the LogicGate')
     
     def __repr__(self) -> str:
-        s = f'Node(out={self.out})'
+        s = f'Node(out={self.out},key={self.key})'
         return s
     
     def __eq__(self, __value: object) -> bool:
@@ -34,6 +34,13 @@ class Node:
     
     def __hash__(self) -> int:
         return hash(self.key)
+
+    def copy(self) -> 'Node':
+        return Node(
+            key=self.key, 
+            out=self.out.copy(),
+            isinput=self.isinput
+        )
 
 class Neuron(Node):
     r'''
@@ -55,21 +62,35 @@ class Neuron(Node):
     '''
     def __init__(
         self, 
+        key:int|str = None, 
+        out:int|List = None,
+        isinput:bool = False,
         tau:int = 0, 
         weights:List[int] = None,
         firstlayer:bool = False,
         isoutput:bool = False
     ) -> None:
-        super().__init__()
+        super().__init__(key=key, out=out, isinput=isinput)
         self.tau = tau
         self.inputs:List[Node] = []
-        self.weights:List[int] =[] if weights == None else weights
+        self.weights:List[int] = [] if weights == None else weights
         self.firstlayer = firstlayer
         self.isoutput = isoutput
     
     def __repr__(self) -> str:
         s = f'Neuron(out={self.out},key={self.key},tau={self.tau},weights={self.weights})'
         return s
+    
+    def connect(self, node:Node, w:int) -> None:
+        r'''
+        Adds a weigthed connection between the instance Neuron and the
+        argument Node.
+        '''
+        assert isinstance(node, Node)
+        self.inputs.append(node)
+        self.weights.append(w)
+        
+        return None
 
     def compute(self,it) -> Literal[0, 1]:
         r'''
@@ -89,10 +110,3 @@ class Neuron(Node):
                 n.compute(it=it)
         self.out = 1 if sum([n.out[it]*w if n.isinput else n.out*w for n,w in zip(self.inputs,self.weights)]) >= self.tau else 0
         return self.out
-
-class OutputNeuron(Neuron):
-    r'''
-    Abstract class refering to the unique output neuron. It inherit from Neuron class.
-    '''
-    def __init__(self, tau:int = 0, weights:List[int] = None, firstlayer:bool = False) -> None:
-        super().__init__(tau, weights, firstlayer)

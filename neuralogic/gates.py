@@ -1,5 +1,5 @@
 from neuralogic.logicgate import LogicGate
-from neuralogic.nn.neuron import Neuron, OutputNeuron, Node
+from neuralogic.nn.neuron import Neuron, Node
 from neuralogic.lgutils import *
 
 def buildLG(neuron) -> LogicGate:
@@ -53,7 +53,7 @@ def NOR() -> LogicGate:
 def XOR() -> LogicGate:
     FINAL = AND()
     OR_ = OR()
-    NAND_ = NAND()
+    NAND_ = ManualNAND()
     FINAL.merge(OR_, NAND_)
     return FINAL
 

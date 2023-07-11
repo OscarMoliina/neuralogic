@@ -3,13 +3,14 @@ from neuralogic.gates import *
 from neuralogic.lgutils import *
 from typing import Any, List, Tuple, Literal
 
+#print(NAND())
 ops = {
     #str, logicgate, preference, numvars, neuron
-    'not' : (NOT(), 1, 1, NOTNeuron),
-    'and' : (AND(), 0, 2, ANDNeuron),
-    'or'  : (OR(),  0, 2, ORNeuron),
-    'nand': (NAND(),0, 2, NANDNeuron),
-    'nor' : (NOR(), 0, 2, NORNeuron),
+    'not' : (NOT, 1, 1, NOTNeuron),
+    'and' : (AND, 0, 2, ANDNeuron),
+    'or'  : (OR,  0, 2, ORNeuron),
+    'nand': (NAND,0, 2, NANDNeuron),
+    'nor' : (NOR, 0, 2, NORNeuron),
 }
 
 class RPN:

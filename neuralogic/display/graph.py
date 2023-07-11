@@ -32,7 +32,7 @@ def create_dot_graph(lg):
                  fontname="Poppins bold")
 
     for n in lg.neurons:
-        dot.node(str(n.key), 
+        dot.node(str(id(n)),str(n.key), 
                  #str(n), 
                  shape='ellipse', 
                  fillcolor='turquoise', 

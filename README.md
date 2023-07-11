@@ -38,6 +38,13 @@ Truth table:
 - Hashable Nodes
 - Parser
 
+### Done in 11 july
+- OutputNeuron erased
+- connect as Neuron method
+- created ``copy()`` as Node method
+- LogicGate ``merge()`` changed working correctly 
+- LogicGate.variables OrderedDict
+
 ### To-Do
 - Graphical Unit Interface
 - The rest of all binary LogicGates
@@ -45,4 +52,4 @@ Truth table:
   - Simplify a LogicGate to a new lg only made with NAND and NOT  
 - Structural Graph
 - Identify input variables (Nodes) with a key to maintain coherence in merge
-- Improve Merge
+- Improve the connect field
