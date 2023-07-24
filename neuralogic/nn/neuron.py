@@ -22,8 +22,6 @@ class Node:
         self.key = key
         self.out = out
         self.isinput = isinput
-        if self.isinput and not isinstance(self.out, List):
-            raise TypeError('Output must be a list of input values for the LogicGate')
     
     def __repr__(self) -> str:
         s = f'Node(out={self.out},key={self.key})'
@@ -81,14 +79,14 @@ class Neuron(Node):
         s = f'Neuron(out={self.out},key={self.key},tau={self.tau},weights={self.weights})'
         return s
     
-    def connect(self, node:Node, w:int) -> None:
+    def connect(self, *nodes:Node) -> None:
         r'''
         Adds a weigthed connection between the instance Neuron and the
         argument Node.
         '''
-        assert isinstance(node, Node)
-        self.inputs.append(node)
-        self.weights.append(w)
+        assert all([isinstance(node, Node) for node in nodes])
+        for node in nodes:
+            self.inputs.append(node)
         
         return None
 

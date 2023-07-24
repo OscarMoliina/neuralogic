@@ -9,7 +9,7 @@ def buildLG(neuron) -> LogicGate:
     n.firstlayer = True
     lg.add(n)
     for i in range(lg.numvars):
-        lg.connect(lg.inputs[i], n, n.weights[i])
+        lg.connect(lg.inputs[i], n)
     return lg
 
 def Buffer() -> LogicGate: return buildLG(neuron=BufferNeuron) 
@@ -31,9 +31,9 @@ def ManualXOR() -> LogicGate:
     lg.add(OR)
     lg.add(NAND)
     for i in range(lg.numvars):
-        lg.connect(lg.inputs[i], OR, OR.weights[i])
+        lg.connect(lg.inputs[i], OR)
     for i in range(lg.numvars):
-        lg.connect(lg.inputs[i], NAND, NAND.weights[i])
+        lg.connect(lg.inputs[i], NAND)
     lg.connect(OR, AND, 1)
     lg.connect(NAND, AND, 1)
     return lg

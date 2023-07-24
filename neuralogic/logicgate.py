@@ -32,10 +32,9 @@ class LogicGate(Node):
         self.combinations = 2**self.numvars
         self.outputn: Neuron = None
         self.neurons: List[Neuron] = []
-        self.inputs: List[Node] = [] # All the inputs with the possibility of repetition
-        self.variables:OrderedDict[int:List] = OrderedDict() # Set of all different inputs
+        self.inputs: List[Node] = [] 
+        self.variables:OrderedDict[int:List] = OrderedDict()
         self.insertInputs()
-        #self.structure = {}
 
     def __repr__(self) -> str:
         s = f'LogicGate(\n    {len(self.neurons)} neurons,'
@@ -60,21 +59,22 @@ class LogicGate(Node):
         '''
         binary = [1,0]
         inputs = list(product(binary,repeat=self.numvars))
-        self.inputs = [Node(out=[i[j] for i in inputs], key=j, isinput=True) for j in range(self.numvars)]
+        self.inputs = [Node(out=[i[j] for i in inputs], key=chr(65+j), isinput=True) for j in range(self.numvars)]
         for inp in self.inputs:
             self.variables[inp.key] = inp.out
 
-    def add(self, n):
+    def add(self, *neurons:'Neuron'):
         r'''
         Adds a non-connected neuron to the logic gate.
 
         If it's an instance of OutputNeuron, the method assigns ``self.outputn`` to the
         neuron. 
         '''
-        if isinstance(n, Neuron):
-            self.neurons.append(n)
-            if n.isoutput and not self.outputn:
-                self.outputn = n
+        for n in neurons:
+            if isinstance(n, Neuron):
+                self.neurons.append(n)
+                if n.isoutput and not self.outputn:
+                    self.outputn = n
 
     def merge(self, *args:'LogicGate'):
         r'''
@@ -110,7 +110,7 @@ class LogicGate(Node):
         for lg in args:
             if isinstance(lg,LogicGate):
                 for n in lg.neurons:
-                    self.add(n=n)
+                    self.add(n)
                 for inp in lg.inputs:
                     self.variables[inp.key] = None
                     self.inputs.append(inp.copy())
@@ -160,15 +160,13 @@ class LogicGate(Node):
     # amb totes les variables canviades per les expressions 
     # dels arguments.
 
-    def connect(self, n1, n2, w):
+    def connect(self, n1, n2):
         r'''
         Adds a weigthed connection between neuron 1 and 2
         '''
         assert isinstance(n2,Neuron), 'n2 must be an instance of Neuron.'
         if isinstance(n1,Node):
-            #self.structure[n2].append(n1)
             n2.inputs.append(n1)
-            #n2.weights.append(w)
         else:
             raise TypeError('n1 must be an instance of Node.')
     

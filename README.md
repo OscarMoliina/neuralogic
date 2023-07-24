@@ -40,7 +40,7 @@ Truth table:
 
 ### Done in 11 july
 - OutputNeuron erased
-- connect as Neuron method
+- ``connect()`` as Neuron method
 - created ``copy()`` as Node method
 - LogicGate ``merge()`` changed working correctly 
 - LogicGate.variables OrderedDict
@@ -53,3 +53,5 @@ Truth table:
 - Structural Graph
 - Identify input variables (Nodes) with a key to maintain coherence in merge
 - Improve the connect field
+- Function startInputs that takes all inputs and, in order, it assigns the correct self.out to each of them
+- Full addition circuit

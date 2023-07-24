@@ -97,8 +97,7 @@ class LGCreator:
                     if not isinstance(node,Neuron):
                         n.firstlayer = True
                     self.lg.connect(n1=node,
-                                    n2=n,
-                                    w=n.weights[idx])
+                                    n2=n)
                 self.varstack.append(n)
 
         return self.lg
