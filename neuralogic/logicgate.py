@@ -1,5 +1,5 @@
-from typing import List, Tuple, Any, overload, Literal, Set
-from collections import OrderedDict, namedtuple
+from typing import List, Literal
+from collections import OrderedDict
 from itertools import product
 from neuralogic.nn.neuron import Neuron, Node
 

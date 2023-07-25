@@ -1,7 +1,7 @@
 from neuralogic.logicgate import LogicGate
 from neuralogic.gates import *
 from neuralogic.lgutils import *
-from typing import Any, List, Tuple, Literal
+from typing import List
 
 #print(NAND())
 ops = {

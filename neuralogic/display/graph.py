@@ -1,26 +1,9 @@
-import networkx as nx
 from graphviz import Digraph
-import matplotlib.pyplot as plt
-
 from neuralogic.nn import *
 from neuralogic.logicgate import LogicGate
 from neuralogic.lgutils import *
 
-def create_graph(lg:LogicGate) -> nx.DiGraph:
-    G = nx.DiGraph()
-    for n in lg.neurons:
-        for inp, w in zip(n.inputs, n.weights):
-            G.add_edge(inp, n, weight = w)
-    return G
-
-def draw_graph(G):
-    pos = nx.spring_layout(G)
-    nx.draw_networkx_nodes(G, pos)
-    nx.draw_networkx_labels(G, pos)
-    nx.draw_networkx_edges(G, pos, edge_color='r', arrows=True)
-    plt.show()
-
-def create_dot_graph(lg):
+def create_dot_graph(lg:LogicGate):
     dot = Digraph(format='png')
     dot.attr(dpi='300')
     for node in lg.inputs:

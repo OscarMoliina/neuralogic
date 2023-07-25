@@ -37,8 +37,6 @@ Truth table:
 - Documentation in DocStrings
 - Hashable Nodes
 - Parser
-
-### Done in 11 july
 - OutputNeuron erased
 - ``connect()`` as Neuron method
 - created ``copy()`` as Node method
@@ -46,12 +44,5 @@ Truth table:
 - LogicGate.variables OrderedDict
 
 ### To-Do
-- Graphical Unit Interface
-- The rest of all binary LogicGates
-- Class Simplifier
-  - Simplify a LogicGate to a new lg only made with NAND and NOT  
-- Structural Graph
-- Identify input variables (Nodes) with a key to maintain coherence in merge
-- Improve the connect field
 - Function startInputs that takes all inputs and, in order, it assigns the correct self.out to each of them
-- Full addition circuit
+
